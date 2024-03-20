@@ -5,7 +5,11 @@ class TextNode:
         self.url = url
 
     def eq(self, text_node_1, text_node_2):
-        print("to do")
+        return (
+            (text_node_1.text == text_node_2.text)
+            and (text_node_1.text_type == text_node_2.text_type)
+            and (text_node_1.url == text_node_2.url)
+        )
 
     def repr(self):
-        return "TextNode(TEXT, TEXT_TYPE, URL)"
+        return f"TextNode('{self.text}','{self.text_type}', '{self.url}' )"
