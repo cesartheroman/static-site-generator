@@ -12,4 +12,4 @@ class TextNode:
         )
 
     def repr(self):
-        return f"TextNode('{self.text}','{self.text_type}', '{self.url}' )"
+        print(f"TextNode({self.text}, {self.text_type}, {self.url})")
