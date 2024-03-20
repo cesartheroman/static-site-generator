@@ -4,8 +4,12 @@ class TextNode:
         self.text_type = text_type
         self.url = url
 
-    def eq(self, text_node_1, text_node_2):
-        print("to do")
+    def eq(self, other_node):
+        return (
+            (self.text == other_node.text)
+            and (self.text == other_node.text_type)
+            and (self.url == other_node.url)
+        )
 
     def repr(self):
-        return "TextNode(TEXT, TEXT_TYPE, URL)"
+        print(f"TextNode({self.text}, {self.text_type}, {self.url})")
