@@ -4,11 +4,11 @@ class TextNode:
         self.text_type = text_type
         self.url = url
 
-    def eq(self, text_node_1, text_node_2):
+    def eq(self, other_node):
         return (
-            (text_node_1.text == text_node_2.text)
-            and (text_node_1.text_type == text_node_2.text_type)
-            and (text_node_1.url == text_node_2.url)
+            (self.text == other_node.text)
+            and (self.text == other_node.text_type)
+            and (self.url == other_node.url)
         )
 
     def repr(self):
