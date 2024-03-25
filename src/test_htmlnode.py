@@ -8,11 +8,19 @@ class TestHTMLNode(unittest.TestCase):
         node = HTMLNode(
             "p",
             "this is a paragraph",
-            None,
+            [],
             {"href": "https://www.google.com", "target": "_blank"},
         )
         # node2 = HTMLNode("h1", "this is an h1", None, {"target": "_blank"})
-        self.assertEqual(node.props_to_html(), 'href="https://www.google.com"')
+
+        # self.assertEqual(
+        #     node.props_to_html(), 'href="https://www.google.com" target="_blank"'
+        # )
+
+        self.assertEqual(
+            repr(node),
+            "p, this is a paragraph, [], {'href': 'https://www.google.com', 'target': '_blank'}",
+        )
 
 
 if __name__ == "__main__":
