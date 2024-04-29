@@ -123,12 +123,11 @@ class ParentNode(HTMLNode):
         <p><b>Bold text</b>Normal text<i>italic text</i>Normal text</p>
         """
         if self.tag is None:
-            raise ValueError("Need a tag!")
+            raise ValueError("Invalid HTML: no tag")
 
         if not self.children:
-            raise ValueError("Need children!")
+            raise ValueError("Invalid HTML: no children")
 
-        # TODO: Implement this
         html = f"<{self.tag}{self.props_to_html()}>"
         for child in self.children:
             if hasattr(child, "to_html"):
