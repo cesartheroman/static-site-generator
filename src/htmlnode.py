@@ -94,3 +94,48 @@ class LeafNode(HTMLNode):
 
     def __repr__(self):
         return f"LeafNode({self.tag}, {self.value}, {self.props})"
+
+
+class ParentNode(HTMLNode):
+    """
+    Handles the nesting of HTML nodes inside of one another.
+    Any HTML node that is not a leaf is a parent node.
+    """
+
+    def __init__(self, tag, children, props=None):
+        super().__init__(tag, None, children, props)
+
+    def to_html(self):
+        """
+        If no tag, raises a ValueError
+        If no children, raise ValueError with differnt message
+        Should return a string representing HTML tag of node and its children, should be recursive
+        with each recursion using a new node instance.
+        eg:
+        node = ParentNode("p", [
+        LeafNode("b", "Bold text"),
+        LeafNode(None, "Normal text"),
+        LeafNode('i', "italic text"),
+        LeafNode(None, "Normal text"),
+        ])
+        node.to_html()
+        should return:
+        <p><b>Bold text</b>Normal text<i>italic text</i>Normal text</p>
+        """
+        if self.tag is None:
+            raise ValueError("Need a tag!")
+
+        if not self.children:
+            raise ValueError("Need children!")
+
+        # TODO: Implement this
+        html = f"<{self.tag}{self.props_to_html()}>"
+        for child in self.children:
+            if hasattr(child, "to_html"):
+                html += child.to_html()
+            else:
+                html += child
+
+        html += f"</{self.tag}>"
+
+        return html

@@ -1,6 +1,6 @@
 import unittest
 
-from htmlnode import HTMLNode, LeafNode
+from htmlnode import HTMLNode, LeafNode, ParentNode
 
 
 class TestHTMLNode(unittest.TestCase):
@@ -64,6 +64,57 @@ class TestHTMLNode(unittest.TestCase):
         self.assertEqual(
             node.to_html(),
             '<a href="https://www.google.com" target="_blank">Click me!</a>',
+        )
+
+    def test_parent_node(self):
+        """
+        Basic nesting with leafnodes of a simple nested structure
+        """
+        node = ParentNode(
+            "a",
+            [
+                LeafNode("div", "this is a div"),
+                LeafNode("p", "this is a paragraph"),
+            ],
+        )
+        self.assertEqual(
+            node.to_html(), "<a><div>this is a div</div><p>this is a paragraph</p></a>"
+        )
+
+    def test_deeply_nested(self):
+        """
+        Testing a deeply nested structure with multiple levels of ParentNode and LeafNode
+        """
+        inner_node = ParentNode("div", [LeafNode("span", "deeply nested span")])
+        mid_node = ParentNode(
+            "section", [LeafNode("p", "nested paragraph"), inner_node]
+        )
+        outer_node = ParentNode("article", [LeafNode("h1", "header"), mid_node])
+        self.assertEqual(
+            outer_node.to_html(),
+            "<article><h1>header</h1><section><p>nested paragraph</p><div><span>deeply nested span</span></div></section></article>",
+        )
+
+    def test_mixed_properties(self):
+        """
+        Testing nodes that have properies set, and also testing a mix of Node types
+        """
+        complex_node = ParentNode(
+            "div",
+            [
+                LeafNode(
+                    "a",
+                    "click here",
+                    {"href": "https://www.example.com", "target": "_blank"},
+                ),
+                "raw text",
+                ParentNode("footer", [LeafNode("b", "bold text"), " more raw text"]),
+            ],
+            {"id": "container", "class": "my-container"},
+        )
+        self.assertEqual(
+            complex_node.to_html(),
+            '<div id="container" class="my-container"><a href="https://www.example.com" target="_blank">click here</a>raw text<footer><b>bold text</b> more raw text</footer></div>',
         )
 
 
