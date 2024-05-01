@@ -1,5 +1,6 @@
 from htmlnode import LeafNode
 
+# Valid TextNode types
 text_type_text = "text"
 text_type_bold = "bold"
 text_type_italic = "italic"
@@ -58,3 +59,26 @@ class TextNode:
             return LeafNode("img", "", {"src": text_node.url, "alt": text_node.text})
 
         raise ValueError(f"Invalid text type: {text_node.text_type}")
+
+    def split_nodes_delimiter(self, old_nodes, delimiter, text_type):
+        """
+        Takes a list of "old nodes", delimiter, and a text type.
+        Return new list of nodes, where any "text" type nodes are (potentially)
+        split into multiple nodes based on syntax
+
+        node = TextNode("This is text with a `code block` word", text_type_text)
+        new_nodes = split_nodes_delimiter([node], "`", text_type_code)
+        Returns:
+        [
+            TextNode("This is text with a ", text_type_text),
+            TextNode("code block", text_type_code),
+            TextNode(" word", text_type_text)
+        ]
+        """
+        result = []
+
+        for node in old_nodes:
+            part1 = node.split(delimiter)
+            result.append(part1)
+
+        return result
