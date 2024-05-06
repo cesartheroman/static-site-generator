@@ -62,5 +62,34 @@ class TestInlineMarkdown(unittest.TestCase):
 
         self.assertTrue("Missing closing delimiter for node" in str(context.exception))
 
-    # def test_split_delimiter_various(self):
-    # TODO: finish implementing the three delimiters
+    def test_split_delimiter_various(self):
+        """This test checks to see that it works with different type of delimiters"""
+        old_node_italic = TextNode("Here is **bold** text", "text")
+        new_nodes_italic = split_nodes_delimiter([old_node_italic], "**", "bold")
+
+        expected_result_bold = [
+            TextNode("Here is ", "text"),
+            TextNode("bold", "bold"),
+            TextNode(" text", "text"),
+        ]
+
+        self.assertEqual(
+            new_nodes_italic,
+            expected_result_bold,
+            f"Expected: {expected_result_bold}\nActual: {new_nodes_italic}",
+        )
+
+        old_node_italic = TextNode("Here is **bold** text", "text")
+        new_nodes_italic = split_nodes_delimiter([old_node_italic], "**", "bold")
+
+        expected_result_italic = [
+            TextNode("Here is ", "text"),
+            TextNode("bold", "bold"),
+            TextNode(" text", "text"),
+        ]
+
+        self.assertEqual(
+            new_nodes_italic,
+            expected_result_bold,
+            f"Expected: {expected_result_italic}\nActual: {new_nodes_italic}",
+        )
