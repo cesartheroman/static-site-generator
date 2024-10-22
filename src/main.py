@@ -1,12 +1,9 @@
-from textnode import TextNode
+from textnode import TextNode, TextType
 
 
 def main():
-    """
-    Create new TextNode object with dummy values
-    """
-    textnode = TextNode("This is a text node", "bold", "https://www.boot.dev")
-    print(textnode)
+    print(TextNode("This is a text node", TextType.BOLD, "https://www.boot.dev"))
 
 
-main()
+if __name__ == "__main__":
+    main()
