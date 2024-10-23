@@ -114,7 +114,7 @@ class TestLeafNode(unittest.TestCase):
             str(context.exception), "Invalid HTML: All leaf nodes must have a value"
         )
 
-    def test_LeadNode_str_representation(self):
+    def test_LeafNode_str_representation(self):
         # Test __repr__ method
         node1 = LeafNode("p", "this is a paragraph", {"class": "container"})
         actual = repr(node1)

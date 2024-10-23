@@ -1,6 +1,7 @@
 import unittest
 
-from textnode import TextNode, TextType
+from htmlnode import LeafNode
+from textnode import TextNode, TextType, text_node_to_html_node
 
 
 class TestTextNode(unittest.TestCase):
@@ -12,9 +13,9 @@ class TestTextNode(unittest.TestCase):
         self.assertIsNone(node.url)
 
         # Test initialization w/URL
-        node_with_url = TextNode("Click here", TextType.LINKS, "https://example.com")
+        node_with_url = TextNode("Click here", TextType.LINK, "https://example.com")
         self.assertEqual(node_with_url.text, "Click here")
-        self.assertEqual(node_with_url.text_type, "links")
+        self.assertEqual(node_with_url.text_type, "link")
         self.assertEqual(node_with_url.url, "https://example.com")
 
     def test_TextNode_equality(self):
@@ -28,12 +29,12 @@ class TestTextNode(unittest.TestCase):
         self.assertNotEqual(node1, node3)
 
         # Test inequality w/diff type
-        node4 = TextNode("This is a text node", TextType.IMAGES)
+        node4 = TextNode("This is a text node", TextType.IMAGE)
         self.assertNotEqual(node1, node4)
 
         # Test inequality w/diff URL
-        node5 = TextNode("Click here", TextType.LINKS, "https://example.com")
-        node6 = TextNode("Click here", TextType.LINKS, "https://different.com")
+        node5 = TextNode("Click here", TextType.LINK, "https://example.com")
+        node6 = TextNode("Click here", TextType.LINK, "https://different.com")
         self.assertNotEqual(node5, node6)
 
     def test_TextNode_str_representation(self):
@@ -42,9 +43,63 @@ class TestTextNode(unittest.TestCase):
         expected = "TextNode(Testing repr, italic, None)"
         self.assertEqual(repr(node), expected)
 
-        node_with_url = TextNode("Link", TextType.LINKS, "https://example.com")
-        expected_with_url = "TextNode(Link, links, https://example.com)"
+        node_with_url = TextNode("Link", TextType.LINK, "https://example.com")
+        expected_with_url = "TextNode(Link, link, https://example.com)"
         self.assertEqual(repr(node_with_url), expected_with_url)
+
+
+class TestTextNodeConversion(unittest.TestCase):
+    def test_TextNode_to_html_node(self):
+        # Test conversion from text type to LeafNode
+        node1 = TextNode("this is plain text", TextType.TEXT)
+        leaf_node = text_node_to_html_node(node1)
+        print("this is leaf_node:", leaf_node)
+        self.assertIsInstance(leaf_node, LeafNode)
+        self.assertIsNone(leaf_node.tag)
+        self.assertEqual(leaf_node.value, "this is plain text")
+        self.assertIsNone(leaf_node.props)
+
+        # Test conversion from bold to LeafNode
+        node2 = TextNode("this is bold text", TextType.BOLD)
+        leaf_node = text_node_to_html_node(node2)
+        self.assertIsInstance(leaf_node, LeafNode)
+        self.assertEqual(leaf_node.tag, "b")
+        self.assertEqual(leaf_node.value, "this is bold text")
+        self.assertIsNone(leaf_node.props)
+
+        # Test conversion from italic to LeafNode
+        node3 = TextNode("this is italic text", TextType.ITALIC)
+        leaf_node = text_node_to_html_node(node3)
+        self.assertIsInstance(leaf_node, LeafNode)
+        self.assertEqual(leaf_node.tag, "i")
+        self.assertEqual(leaf_node.value, "this is italic text")
+        self.assertIsNone(leaf_node.props)
+
+        # Test conversion from code to LeafNode
+        node4 = TextNode("this is code text", TextType.CODE)
+        leaf_node = text_node_to_html_node(node4)
+        self.assertIsInstance(leaf_node, LeafNode)
+        self.assertEqual(leaf_node.tag, "code")
+        self.assertEqual(leaf_node.value, "this is code text")
+        self.assertIsNone(leaf_node.props)
+
+        # Test conversion from link to LeafNode
+        node5 = TextNode("this is a link!", TextType.LINK, "http://example.com")
+        leaf_node = text_node_to_html_node(node5)
+        self.assertIsInstance(leaf_node, LeafNode)
+        self.assertEqual(leaf_node.tag, "a")
+        self.assertEqual(leaf_node.value, "this is a link!")
+        self.assertEqual(leaf_node.props, {"href": "http://example.com"})
+
+        # Test conversion from image to LeafNode
+        node6 = TextNode("example image", TextType.IMAGE, "http://example.com")
+        leaf_node = text_node_to_html_node(node6)
+        self.assertIsInstance(leaf_node, LeafNode)
+        self.assertEqual(leaf_node.tag, "img")
+        self.assertEqual(leaf_node.value, "")
+        self.assertEqual(
+            leaf_node.props, {"src": "http://example.com", "alt": "example image"}
+        )
 
 
 if __name__ == "__main__":
