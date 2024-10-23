@@ -1,6 +1,6 @@
 import unittest
 
-from htmlnode import HTMLNode, LeafNode
+from htmlnode import HTMLNode, LeafNode, ParentNode
 
 
 class TextHTMLNode(unittest.TestCase):
@@ -39,24 +39,6 @@ class TextHTMLNode(unittest.TestCase):
         actual = node2.props_to_html()
         expected = ""
         self.assertEqual(actual, expected, "Expected props to be empty string")
-
-    def test_HTMLNode_equality(self):
-        # Test equal nodes
-        node1 = HTMLNode(
-            tag="a",
-            children=[HTMLNode("h1"), HTMLNode("h2")],
-            props={"class": "greeting", "href": "https://boot.dev"},
-        )
-        node2 = HTMLNode(
-            tag="a",
-            children=[HTMLNode("h1"), HTMLNode("h2")],
-            props={"class": "greeting", "href": "https://boot.dev"},
-        )
-        self.assertEqual(node1, node2, "Nodes should be equal")
-
-        # Test unequal nodes
-        node3 = HTMLNode(tag="a", children=[HTMLNode("h2")], props=None)
-        self.assertNotEqual(node1, node3, "Nodes should not be equal")
 
     def test_HTMLNode_str_representation(self):
         # Test __repr__ method w/same content
@@ -141,11 +123,97 @@ class TestLeafNode(unittest.TestCase):
             actual, expected, f"Expected: {expected}, to be equal to actual: {actual}"
         )
 
-    def test_LeafNode_equality(self):
-        # Test equality
-        node1 = LeafNode("p", "this is paragraph")
-        node2 = LeafNode("p", "this is paragraph")
-        self.assertEqual(node1, node2)
+
+class TestParentNode(unittest.TestCase):
+    def test_ParentNode_initialization(self):
+        # Test basic init
+        node1 = ParentNode(
+            "div",
+            [
+                LeafNode("b", "bold text"),
+                LeafNode("p", "this is a paragraph"),
+            ],
+        )
+        self.assertIsInstance(node1, ParentNode)
+        self.assertEqual(len(node1.children), 2)
+        self.assertTrue(all(isinstance(x, LeafNode) for x in node1.children))
+
+    def test_ParentNode_to_html(self):
+        # Test to_html with valid arguments
+        node1 = ParentNode(
+            "p",
+            [
+                LeafNode("b", "Bold text"),
+                LeafNode(None, "Normal text"),
+                LeafNode("i", "italic text"),
+                LeafNode(None, "Normal text"),
+            ],
+        )
+        actual = node1.to_html()
+        expected = "<p><b>Bold text</b>Normal text<i>italic text</i>Normal text</p>"
+        self.assertEqual(
+            actual, expected, f"Expected: {expected}, to be equal to actual: {actual}"
+        )
+
+        # Test with no tag
+        node2 = ParentNode(None, [LeafNode("span", "this is a span")])
+        with self.assertRaises(ValueError) as context:
+            node2.to_html()
+        self.assertEqual(
+            str(context.exception),
+            "Invalid ParentNode: must have a tag",
+        )
+
+        # Test with no children
+        node3 = ParentNode("i", None)
+        with self.assertRaises(ValueError) as context:
+            node3.to_html()
+        self.assertEqual(
+            str(context.exception), "Invalid ParentNode: must have children"
+        )
+
+        # Test with empty children
+        node3 = ParentNode("i", [])
+        with self.assertRaises(ValueError) as context:
+            node3.to_html()
+        self.assertEqual(
+            str(context.exception), "Invalid ParentNode: must have children"
+        )
+
+        # Test with nested ParentNodes and LeafNodes
+        node4 = ParentNode(
+            "p",
+            [
+                ParentNode(
+                    "b",
+                    [ParentNode("i", [LeafNode("a", "this is an a tag")])],
+                ),
+                LeafNode("h1", "this is an h1 tag"),
+            ],
+        )
+        actual = node4.to_html()
+        expected = (
+            "<p><b><i><a>this is an a tag</a></i></b><h1>this is an h1 tag</h1></p>"
+        )
+        self.assertEqual(
+            actual, expected, f"Expected: {expected}, to be equal to actual: {actual}"
+        )
+
+    def test_ParentNode_str_representation(self):
+        # Test __repr__ method
+        node1 = ParentNode(
+            "p",
+            [
+                LeafNode("b", "bold text"),
+                LeafNode("p", "this is a paragraph"),
+            ],
+            {"class": "container"},
+        )
+        actual = repr(node1)
+        expected = "ParentNode(p, children: [LeafNode(b, bold text, None), LeafNode(p, this is a paragraph, None)], {'class': 'container'})"
+        self.assertEqual(
+            actual, expected, f"Expected: {expected}, to be equal to actual: {actual}"
+        )
 
 
 if __name__ == "__main__":

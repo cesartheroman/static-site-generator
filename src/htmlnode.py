@@ -6,7 +6,7 @@ class HTMLNode:
     def __init__(
         self,
         tag: Union[str, None] = None,
-        value: str= None,
+        value: str = None,
         children: Union[List["HTMLNode"], None] = None,
         props: Union[dict[str, str], None] = None,
     ):
@@ -27,21 +27,12 @@ class HTMLNode:
             )
         return ""
 
-    def __eq__(self, other) -> bool:
-        if (
-            self.tag == other.tag
-            and self.children == other.children
-            and self.props == other.props
-        ):
-            return True
-        return False
-
     def __repr__(self) -> str:
         return f"HTMLNode({self.tag}, {self.value}, children: {self.children}, {self.props})"
 
 
 class LeafNode(HTMLNode):
-    def __init__(self, tag: str, value: str, props: Union[dict[str, str]]=None):
+    def __init__(self, tag: str, value: str, props: Union[dict[str, str], None] = None):
         super().__init__(
             tag,
             value,
@@ -60,3 +51,29 @@ class LeafNode(HTMLNode):
 
     def __repr__(self) -> str:
         return f"LeafNode({self.tag}, {self.value}, {self.props})"
+
+
+class ParentNode(HTMLNode):
+    def __init__(
+        self,
+        tag: str,
+        children: List["HTMLNode"],
+        props: Union[dict[str, str], None] = None,
+    ):
+        super().__init__(tag, None, children, props)
+
+    def to_html(self) -> str:
+        if self.tag is None:
+            raise ValueError("Invalid ParentNode: must have a tag")
+
+        if self.children is None or len(self.children) == 0:
+            raise ValueError("Invalid ParentNode: must have children")
+
+        result = ""
+        for child in self.children:
+            result += child.to_html()
+
+        return f"<{self.tag}>{result}</{self.tag}>"
+
+    def __repr__(self) -> str:
+        return f"ParentNode({self.tag}, children: {self.children}, {self.props})"
