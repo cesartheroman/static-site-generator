@@ -4,8 +4,7 @@ from textnode import TextNode, TextType
 
 
 class TestTextNode(unittest.TestCase):
-    def test_initialization(self):
-        """Test basic initialization of TextNode"""
+    def test_TextNode_initialization(self):
         # Test basic initialization
         node = TextNode("Hello", TextType.TEXT)
         self.assertEqual(node.text, "Hello")
@@ -18,8 +17,7 @@ class TestTextNode(unittest.TestCase):
         self.assertEqual(node_with_url.text_type, "links")
         self.assertEqual(node_with_url.url, "https://example.com")
 
-    def test_equality(self):
-        """Test equality comparison between TextNodes"""
+    def test_TextNode_equality(self):
         # Test equality between identical nodes
         node1 = TextNode("This is a text node", TextType.BOLD)
         node2 = TextNode("This is a text node", TextType.BOLD)
@@ -38,8 +36,7 @@ class TestTextNode(unittest.TestCase):
         node6 = TextNode("Click here", TextType.LINKS, "https://different.com")
         self.assertNotEqual(node5, node6)
 
-    def test_str_representation(self):
-        """Test string representation of TextNode"""
+    def test_TextNode_str_representation(self):
         # Test __repr__ method
         node = TextNode("Testing repr", TextType.ITALIC)
         expected = "TextNode(Testing repr, italic, None)"
