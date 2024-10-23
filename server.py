@@ -3,7 +3,11 @@ from http.server import HTTPServer, SimpleHTTPRequestHandler
 PORT = 8888
 ServerAddress = ("localhost", PORT)
 
+
 class CORSHTTPRequestHandler(SimpleHTTPRequestHandler):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, directory="public", **kwargs)
+
     def end_headers(self):
         self.send_header("Access-Control-Allow-Origin", "*")
         self.send_header("Access-Control-Allow-Methods", "GET, OPTIONS")
@@ -14,6 +18,7 @@ class CORSHTTPRequestHandler(SimpleHTTPRequestHandler):
         self.send_response(200, "OK")
         self.end_headers()
 
+
 with HTTPServer(ServerAddress, CORSHTTPRequestHandler) as httpd:
     print("serving on port:", PORT)
     try:
@@ -23,4 +28,3 @@ with HTTPServer(ServerAddress, CORSHTTPRequestHandler) as httpd:
 
     httpd.server_close()
     print("\nserver stopped")
-
