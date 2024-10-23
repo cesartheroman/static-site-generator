@@ -1,6 +1,6 @@
 import unittest
 
-from htmlnode import HTMLNode
+from htmlnode import HTMLNode, LeafNode
 
 
 class TextHTMLNode(unittest.TestCase):
@@ -76,6 +76,76 @@ class TextHTMLNode(unittest.TestCase):
         self.assertNotEqual(
             repr(node1), repr(node3), "Nodes str representation not should not be equal"
         )
+
+
+class TestLeafNode(unittest.TestCase):
+    def test_LeafNode_initialization(self):
+        # Test basic init
+        node1 = LeafNode("div", "This is a div!")
+        self.assertEqual(node1.tag, "div")
+        self.assertEqual(node1.value, "This is a div!")
+        self.assertIsNone(node1.children)
+
+        # Test init with props
+        node2 = LeafNode("p", "hey there", {"class": "text-bold", "id": "greeting"})
+        self.assertEqual(node2.tag, "p")
+        self.assertEqual(node2.value, "hey there")
+        self.assertIsNone(node2.children)
+        self.assertEqual(node2.props, {"class": "text-bold", "id": "greeting"})
+
+        # Test init with None tag
+        node3 = LeafNode(None, "Just text")
+        self.assertIsNone(node3.tag)
+        self.assertEqual(node3.value, "Just text")
+        self.assertIsNone(node3.children)
+
+    def test_LeafNode_to_html(self):
+        # Test cases with valid tag and value
+        node1 = LeafNode("p", "This is a paragraph of text.")
+        actual = node1.to_html()
+        expected = "<p>This is a paragraph of text.</p>"
+        self.assertEqual(
+            actual, expected, f"Expected {expected}, to be equal to {actual}"
+        )
+
+        # Test cases with valid tag, value, and props
+        node2 = LeafNode("a", "Click me!", {"href": "https://www.google.com"})
+        actual = node2.to_html()
+        expected = '<a href="https://www.google.com">Click me!</a>'
+        self.assertEqual(
+            actual, expected, f"Expected: {expected}, to be equal to actual: {actual}"
+        )
+
+        # Test case where no tag (return text)
+        node3 = LeafNode(None, "Just text")
+        actual = node3.to_html()
+        expected = "Just text"
+        self.assertEqual(
+            actual, expected, f"Expected: {expected}, to be equal to actual: {actual}"
+        )
+
+        # Test case where no value
+        node4 = LeafNode("p", None)
+        with self.assertRaises(ValueError) as context:
+            node4.to_html()
+        self.assertEqual(
+            str(context.exception), "Invalid HTML: All leaf nodes must have a value"
+        )
+
+    def test_LeadNode_str_representation(self):
+        # Test __repr__ method
+        node1 = LeafNode("p", "this is a paragraph", {"class": "container"})
+        actual = repr(node1)
+        expected = "LeafNode(p, this is a paragraph, {'class': 'container'})"
+        self.assertEqual(
+            actual, expected, f"Expected: {expected}, to be equal to actual: {actual}"
+        )
+
+    def test_LeafNode_equality(self):
+        # Test equality
+        node1 = LeafNode("p", "this is paragraph")
+        node2 = LeafNode("p", "this is paragraph")
+        self.assertEqual(node1, node2)
 
 
 if __name__ == "__main__":

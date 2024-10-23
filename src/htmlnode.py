@@ -6,10 +6,12 @@ class HTMLNode:
     def __init__(
         self,
         tag: Union[str, None] = None,
+        value: str= None,
         children: Union[List["HTMLNode"], None] = None,
         props: Union[dict[str, str], None] = None,
     ):
         self.tag = tag
+        self.value = value
         self.children = children
         self.props = props
 
@@ -35,4 +37,26 @@ class HTMLNode:
         return False
 
     def __repr__(self) -> str:
-        return f"HTMLNode({self.tag}, {self.children}, {self.props})"
+        return f"HTMLNode({self.tag}, {self.value}, children: {self.children}, {self.props})"
+
+
+class LeafNode(HTMLNode):
+    def __init__(self, tag: str, value: str, props: Union[dict[str, str]]=None):
+        super().__init__(
+            tag,
+            value,
+            None,
+            props,
+        )
+
+    def to_html(self) -> str:
+        if self.value is None:
+            raise ValueError("Invalid HTML: All leaf nodes must have a value")
+
+        if self.tag is None:
+            return self.value
+
+        return f"<{self.tag}{self.props_to_html()}>{self.value}</{self.tag}>"
+
+    def __repr__(self) -> str:
+        return f"LeafNode({self.tag}, {self.value}, {self.props})"
