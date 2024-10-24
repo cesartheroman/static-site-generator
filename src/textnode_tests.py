@@ -1,7 +1,8 @@
 import unittest
 
 from htmlnode import LeafNode
-from textnode import TextNode, TextType, split_nodes_delimiter, text_node_to_html_node
+from inline_markdown import split_nodes_delimiter, text_node_to_html_node
+from textnode import TextNode, TextType
 
 
 class TestTextNode(unittest.TestCase):
@@ -132,7 +133,9 @@ class TestSplitNodeDelimiter(unittest.TestCase):
         )
 
         # Test with code text
-        node3 = TextNode("This is a text with a `code block` in the middle", TextType.TEXT)
+        node3 = TextNode(
+            "This is a text with a `code block` in the middle", TextType.TEXT
+        )
         new_nodes = split_nodes_delimiter([node3], "`", TextType.CODE)
         expected = [
             TextNode("This is a text with a ", TextType.TEXT),
