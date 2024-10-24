@@ -47,3 +47,6 @@ def split_nodes_delimiter(
                 result.append(TextNode(part, text_type))
 
     return result
+
+# def extract_markdown_images(text: str)-> List[tuple[str,str]]:
+#     print(text)
