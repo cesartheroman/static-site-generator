@@ -1,7 +1,11 @@
 import unittest
 
 from htmlnode import LeafNode
-from inline_markdown import split_nodes_delimiter
+from inline_markdown import (
+    extract_markdown_images,
+    extract_markdown_links,
+    split_nodes_delimiter,
+)
 from textnode import TextNode, TextType, text_node_to_html_node
 
 
@@ -52,10 +56,15 @@ class TestTextNodeConversion(unittest.TestCase):
         )
 
     def test_image_text_conversion(self):
-        node = TextNode("a picture of benji", TextType.IMAGE, "http://benjitheroman.com")
+        node = TextNode(
+            "a picture of benji", TextType.IMAGE, "http://benjitheroman.com"
+        )
         leaf_node = text_node_to_html_node(node)
         self._assert_common_leaf_node_properties(
-            leaf_node, "img", "", {"src": "http://benjitheroman.com", "alt": "a picture of benji"}
+            leaf_node,
+            "img",
+            "",
+            {"src": "http://benjitheroman.com", "alt": "a picture of benji"},
         )
 
 
@@ -129,8 +138,29 @@ class TestSplitNodeDelimiter(unittest.TestCase):
         self.assertEqual(new_nodes, expected)
 
 
-# class TestExtractMarkdownImages(unittest.TestCase):
-#     def
+class TestExtractMarkdownFromText(unittest.TestCase):
+    def test_image_extraction(self):
+        text = "This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)"
+        actual = extract_markdown_images(text)
+        expected = [
+            ("rick roll", "https://i.imgur.com/aKaOqIh.gif"),
+            ("obi wan", "https://i.imgur.com/fJRm4Vk.jpeg"),
+        ]
+        self.assertEqual(
+            actual, expected, f"Expected: {expected}, to equal actual: {actual}"
+        )
+
+    def test_link_extraction(self):
+        text = "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)"
+        actual = extract_markdown_links(text)
+        expected = [
+            ("to boot dev", "https://www.boot.dev"),
+            ("to youtube", "https://www.youtube.com/@bootdotdev"),
+        ]
+        self.assertEqual(
+            actual, expected, f"Expected: {expected}, to equal actual: {actual}"
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

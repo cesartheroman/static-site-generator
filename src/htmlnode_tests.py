@@ -109,7 +109,7 @@ class TestLeafNode(unittest.TestCase):
         )
 
         # Test invalid case where no value
-        node4 = LeafNode("p", None) # type: ignore
+        node4 = LeafNode("p", None)  # type: ignore
         with self.assertRaises(ValueError) as context:
             node4.to_html()
         self.assertEqual(
@@ -167,7 +167,7 @@ class TestParentNode(unittest.TestCase):
         )
 
         # Test invalid case with no children
-        node3 = ParentNode("i", None) # type: ignore
+        node3 = ParentNode("i", None)  # type: ignore
         with self.assertRaises(ValueError) as context:
             node3.to_html()
         self.assertEqual(
