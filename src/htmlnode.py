@@ -32,7 +32,12 @@ class HTMLNode:
 
 
 class LeafNode(HTMLNode):
-    def __init__(self, tag: Union[str, None], value: str, props: Union[dict[str, str], None] = None):
+    def __init__(
+        self,
+        tag: Union[str, None],
+        value: str,
+        props: Union[dict[str, str], None] = None,
+    ):
         super().__init__(
             tag,
             value,

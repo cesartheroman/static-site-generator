@@ -64,22 +64,16 @@ def split_nodes_delimiter(
             result.append(node)
             continue
 
-        words = node.text.split(delimiter)
-        if len(words) % 2 == 0:
+        parts = node.text.split(delimiter)
+        if len(parts) % 2 == 0:
             raise Exception(
-                f"Invalid Markdown syntax, missing closing delimiter '{delimiter}'"
+                f"Invalid Markdown: missing closing delimiter '{delimiter}'"
             )
 
-        pos = 0
-        for word in words:
-            if word == "":
-                pos += 1
-                continue
-            if pos % 2 == 0:
-                pos += 1
-                result.append(TextNode(word, TextType.TEXT))
+        for i, part in enumerate(parts):
+            if i % 2 == 0:
+                result.append(TextNode(part, TextType.TEXT))
             else:
-                pos += 1
-                result.append(TextNode(word, text_type))
+                result.append(TextNode(part, text_type))
 
     return result
