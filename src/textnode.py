@@ -1,5 +1,4 @@
 from enum import Enum
-from typing import Union
 
 from htmlnode import LeafNode
 
@@ -14,9 +13,7 @@ class TextType(Enum):
 
 
 class TextNode:
-    def __init__(
-        self, text: str, text_type: TextType, url: Union[str, None] = None
-    ) -> None:
+    def __init__(self, text: str, text_type: TextType, url: str | None = None) -> None:
         self.text = text
         self.text_type = text_type.value
         self.url = url
@@ -46,7 +43,6 @@ def text_node_to_html_node(text_node: TextNode) -> LeafNode:
             return LeafNode("code", text_node.text)
         case TextType.LINK.value:
             return LeafNode("a", text_node.text, {"href": text_node.url or ""})
-
         case TextType.IMAGE.value:
             return LeafNode(
                 "img", "", {"src": text_node.url or "", "alt": text_node.text or ""}

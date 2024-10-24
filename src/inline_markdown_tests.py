@@ -5,6 +5,8 @@ from inline_markdown import (
     extract_markdown_images,
     extract_markdown_links,
     split_nodes_delimiter,
+    split_nodes_image,
+    split_nodes_link,
 )
 from textnode import TextNode, TextType, text_node_to_html_node
 
@@ -85,7 +87,7 @@ class TestSplitNodeDelimiter(unittest.TestCase):
             TextNode("bolded phrase", TextType.BOLD),
             TextNode(" in the middle", TextType.TEXT),
         ]
-        self.assertEqual(
+        self.assertListEqual(
             new_nodes, expected, f"Expected: {expected} to be actual: {new_nodes}"
         )
 
@@ -99,7 +101,7 @@ class TestSplitNodeDelimiter(unittest.TestCase):
             TextNode("italic phrase", TextType.ITALIC),
             TextNode(" in the middle", TextType.TEXT),
         ]
-        self.assertEqual(
+        self.assertListEqual(
             new_nodes, expected, f"Expected: {expected} to be actual: {new_nodes}"
         )
 
@@ -113,19 +115,19 @@ class TestSplitNodeDelimiter(unittest.TestCase):
             TextNode("code block", TextType.CODE),
             TextNode(" in the middle", TextType.TEXT),
         ]
-        self.assertEqual(
+        self.assertListEqual(
             new_nodes, expected, f"Expected: {expected} to be actual: {new_nodes}"
         )
 
     def test_split_node_delimiter_empty_text(self):
         node = TextNode("", TextType.TEXT)
         new_nodes = split_nodes_delimiter([node], "**", TextType.BOLD)
-        self.assertEqual(new_nodes, [])
+        self.assertListEqual(new_nodes, [])
 
     def test_split_node_delimiter_no_delimiter(self):
         node = TextNode("Plain text without delimiters", TextType.TEXT)
         new_nodes = split_nodes_delimiter([node], "", TextType.BOLD)
-        self.assertEqual(new_nodes, [node])
+        self.assertListEqual(new_nodes, [node])
 
     def test_split_node_delimiter_multi_occurence(self):
         node = TextNode("**bold** normal **bold**", TextType.TEXT)
@@ -135,7 +137,7 @@ class TestSplitNodeDelimiter(unittest.TestCase):
             TextNode(" normal ", TextType.TEXT),
             TextNode("bold", TextType.BOLD),
         ]
-        self.assertEqual(new_nodes, expected)
+        self.assertListEqual(new_nodes, expected)
 
 
 class TestExtractMarkdownFromText(unittest.TestCase):
@@ -146,7 +148,7 @@ class TestExtractMarkdownFromText(unittest.TestCase):
             ("rick roll", "https://i.imgur.com/aKaOqIh.gif"),
             ("obi wan", "https://i.imgur.com/fJRm4Vk.jpeg"),
         ]
-        self.assertEqual(
+        self.assertListEqual(
             actual, expected, f"Expected: {expected}, to equal actual: {actual}"
         )
 
@@ -157,7 +159,45 @@ class TestExtractMarkdownFromText(unittest.TestCase):
             ("to boot dev", "https://www.boot.dev"),
             ("to youtube", "https://www.youtube.com/@bootdotdev"),
         ]
-        self.assertEqual(
+        self.assertListEqual(
+            actual, expected, f"Expected: {expected}, to equal actual: {actual}"
+        )
+
+
+class TestSplitNodes(unittest.TestCase):
+    def test_split_nodes_link(self):
+        node = TextNode(
+            "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)",
+            TextType.TEXT,
+        )
+        actual = split_nodes_link([node])
+        expected = [
+            TextNode("This is text with a link ", TextType.TEXT),
+            TextNode("to boot dev", TextType.LINK, "https://www.boot.dev"),
+            TextNode(" and ", TextType.TEXT),
+            TextNode(
+                "to youtube", TextType.LINK, "https://www.youtube.com/@bootdotdev"
+            ),
+        ]
+        self.assertListEqual(
+            actual, expected, f"Expected: {expected}, to equal actual: {actual}"
+        )
+
+    def test_split_nodes_image(self):
+        node = TextNode(
+            "This is an image with a link ![benji smile](https://www.benjitheroman.dev) and ![benji bark](https://www.instagram.com/@benjitheroman)",
+            TextType.TEXT,
+        )
+        actual = split_nodes_image([node])
+        expected = [
+            TextNode("This is an image with a link ", TextType.TEXT),
+            TextNode("benji smile", TextType.IMAGE, "https://www.benjitheroman.dev"),
+            TextNode(" and ", TextType.TEXT),
+            TextNode(
+                "benji bark", TextType.IMAGE, "https://www.instagram.com/@benjitheroman"
+            ),
+        ]
+        self.assertListEqual(
             actual, expected, f"Expected: {expected}, to equal actual: {actual}"
         )
 

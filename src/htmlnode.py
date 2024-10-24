@@ -1,14 +1,13 @@
 from functools import reduce
-from typing import List, Union
 
 
 class HTMLNode:
     def __init__(
         self,
-        tag: Union[str, None] = None,
-        value: Union[str, None] = None,
-        children: Union[List["HTMLNode"], None] = None,
-        props: Union[dict[str, str], None] = None,
+        tag: str | None = None,
+        value: str | None = None,
+        children: list["HTMLNode"] | None = None,
+        props: dict[str, str] | None = None,
     ):
         self.tag = tag
         self.value = value
@@ -34,9 +33,9 @@ class HTMLNode:
 class LeafNode(HTMLNode):
     def __init__(
         self,
-        tag: Union[str, None],
+        tag: str | None,
         value: str,
-        props: Union[dict[str, str], None] = None,
+        props: dict[str, str] | None = None,
     ):
         super().__init__(
             tag,
@@ -62,8 +61,8 @@ class ParentNode(HTMLNode):
     def __init__(
         self,
         tag: str,
-        children: List["HTMLNode"],
-        props: Union[dict[str, str], None] = None,
+        children: list["HTMLNode"],
+        props: dict[str, str] | None = None,
     ):
         super().__init__(tag, None, children, props)
 
