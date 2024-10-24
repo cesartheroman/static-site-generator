@@ -6,7 +6,7 @@ class HTMLNode:
     def __init__(
         self,
         tag: Union[str, None] = None,
-        value: str = None,
+        value: Union[str, None] = None,
         children: Union[List["HTMLNode"], None] = None,
         props: Union[dict[str, str], None] = None,
     ):
@@ -15,7 +15,7 @@ class HTMLNode:
         self.children = children
         self.props = props
 
-    def to_html(self) -> None:
+    def to_html(self):
         raise NotImplementedError
 
     def props_to_html(self) -> str:
@@ -32,7 +32,7 @@ class HTMLNode:
 
 
 class LeafNode(HTMLNode):
-    def __init__(self, tag: str, value: str, props: Union[dict[str, str], None] = None):
+    def __init__(self, tag: Union[str, None], value: str, props: Union[dict[str, str], None] = None):
         super().__init__(
             tag,
             value,

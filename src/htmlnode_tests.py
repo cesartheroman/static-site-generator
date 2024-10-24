@@ -19,8 +19,9 @@ class TextHTMLNode(unittest.TestCase):
             props={"class": "container"},
         )
         self.assertEqual(node1.tag, "p")
-        self.assertEqual(len(node1.children), 2)
-        self.assertTrue(all(isinstance(x, HTMLNode) for x in node1.children))
+        self.assertIsNotNone(node1.children)
+        self.assertEqual(len(node1.children or []), 2)
+        self.assertTrue(all(isinstance(x, HTMLNode) for x in node1.children or []))
         self.assertEqual(node1.props, {"class": "container"})
 
     def test_HTMLNode_props_to_html(self):
@@ -43,18 +44,19 @@ class TextHTMLNode(unittest.TestCase):
     def test_HTMLNode_str_representation(self):
         # Test __repr__ method w/same content
         node1 = HTMLNode(
-            "p", [HTMLNode("img"), HTMLNode("div")], {"class": "container"}
+            "p", None, [HTMLNode("img"), HTMLNode("div")], {"class": "container"}
         )
         node2 = HTMLNode(
-            "p", [HTMLNode("img"), HTMLNode("div")], {"class": "container"}
+            "p", None, [HTMLNode("img"), HTMLNode("div")], {"class": "container"}
         )
-
         self.assertEqual(
             repr(node1), repr(node2), "Nodes should have same str representation"
         )
 
         # Test __repr__ method w/o same content
-        node3 = HTMLNode("p", [HTMLNode("h1"), HTMLNode("div")], {"class": "container"})
+        node3 = HTMLNode(
+            "p", None, [HTMLNode("h1"), HTMLNode("div")], {"class": "container"}
+        )
         self.assertNotEqual(
             repr(node1), repr(node3), "Nodes str representation not should not be equal"
         )
@@ -106,8 +108,8 @@ class TestLeafNode(unittest.TestCase):
             actual, expected, f"Expected: {expected}, to be equal to actual: {actual}"
         )
 
-        # Test case where no value
-        node4 = LeafNode("p", None)
+        # Test invalid case where no value
+        node4 = LeafNode("p", None) # type: ignore
         with self.assertRaises(ValueError) as context:
             node4.to_html()
         self.assertEqual(
@@ -135,8 +137,8 @@ class TestParentNode(unittest.TestCase):
             ],
         )
         self.assertIsInstance(node1, ParentNode)
-        self.assertEqual(len(node1.children), 2)
-        self.assertTrue(all(isinstance(x, LeafNode) for x in node1.children))
+        self.assertEqual(len(node1.children or []), 2)
+        self.assertTrue(all(isinstance(x, LeafNode) for x in node1.children or []))
 
     def test_ParentNode_to_html(self):
         # Test to_html with valid arguments
@@ -155,8 +157,8 @@ class TestParentNode(unittest.TestCase):
             actual, expected, f"Expected: {expected}, to be equal to actual: {actual}"
         )
 
-        # Test with no tag
-        node2 = ParentNode(None, [LeafNode("span", "this is a span")])
+        # Test invalid case with no tag
+        node2 = ParentNode(None, [LeafNode("span", "this is a span")])  # type: ignore
         with self.assertRaises(ValueError) as context:
             node2.to_html()
         self.assertEqual(
@@ -164,8 +166,8 @@ class TestParentNode(unittest.TestCase):
             "Invalid ParentNode: must have a tag",
         )
 
-        # Test with no children
-        node3 = ParentNode("i", None)
+        # Test invalid case with no children
+        node3 = ParentNode("i", None) # type: ignore
         with self.assertRaises(ValueError) as context:
             node3.to_html()
         self.assertEqual(

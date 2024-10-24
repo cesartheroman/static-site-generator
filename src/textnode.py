@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Union
+from typing import List, Union
 
 from htmlnode import LeafNode
 
@@ -34,7 +34,7 @@ class TextNode:
         return f"TextNode({self.text}, {self.text_type}, {self.url})"
 
 
-def text_node_to_html_node(text_node: TextNode):
+def text_node_to_html_node(text_node: TextNode) -> LeafNode:
     match text_node.text_type:
         case TextType.TEXT.value:
             return LeafNode(None, text_node.text)
@@ -45,8 +45,41 @@ def text_node_to_html_node(text_node: TextNode):
         case TextType.CODE.value:
             return LeafNode("code", text_node.text)
         case TextType.LINK.value:
-            return LeafNode("a", text_node.text, {"href": text_node.url})
+            return LeafNode("a", text_node.text, {"href": text_node.url or ""})
+
         case TextType.IMAGE.value:
-            return LeafNode("img", "", {"src": text_node.url, "alt": text_node.text})
+            return LeafNode(
+                "img", "", {"src": text_node.url or "", "alt": text_node.text or ""}
+            )
         case _:
-            raise Exception("Invalid TextType")
+            raise Exception(f"Invalid TextType {text_node.text_type}")
+
+
+def split_nodes_delimiter(
+    old_nodes: List["TextNode"], delimiter: str, text_type: TextType
+) -> List["TextNode"]:
+    result = []
+    for node in old_nodes:
+        if node.text_type != TextType.TEXT.value:
+            result.append(node)
+            continue
+
+        words = node.text.split(delimiter)
+        if len(words) % 2 == 0:
+            raise Exception(
+                f"Invalid Markdown syntax, missing closing delimiter '{delimiter}'"
+            )
+
+        pos = 0
+        for word in words:
+            if word == "":
+                pos += 1
+                continue
+            if pos % 2 == 0:
+                pos += 1
+                result.append(TextNode(word, TextType.TEXT))
+            else:
+                pos += 1
+                result.append(TextNode(word, text_type))
+
+    return result

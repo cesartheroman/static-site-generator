@@ -1,7 +1,7 @@
 import unittest
 
 from htmlnode import LeafNode
-from textnode import TextNode, TextType, text_node_to_html_node
+from textnode import TextNode, TextType, split_nodes_delimiter, text_node_to_html_node
 
 
 class TestTextNode(unittest.TestCase):
@@ -53,7 +53,6 @@ class TestTextNodeConversion(unittest.TestCase):
         # Test conversion from text type to LeafNode
         node1 = TextNode("this is plain text", TextType.TEXT)
         leaf_node = text_node_to_html_node(node1)
-        print("this is leaf_node:", leaf_node)
         self.assertIsInstance(leaf_node, LeafNode)
         self.assertIsNone(leaf_node.tag)
         self.assertEqual(leaf_node.value, "this is plain text")
@@ -99,6 +98,49 @@ class TestTextNodeConversion(unittest.TestCase):
         self.assertEqual(leaf_node.value, "")
         self.assertEqual(
             leaf_node.props, {"src": "http://example.com", "alt": "example image"}
+        )
+
+
+class TestSplitNodeDelimiter(unittest.TestCase):
+    def test_split_node_delimiter(self):
+        # Test with bold text
+        node1 = TextNode(
+            "This is a text with a **bolded phrase** in the middle", TextType.TEXT
+        )
+        new_nodes = split_nodes_delimiter([node1], "**", TextType.BOLD)
+        expected = [
+            TextNode("This is a text with a ", TextType.TEXT),
+            TextNode("bolded phrase", TextType.BOLD),
+            TextNode(" in the middle", TextType.TEXT),
+        ]
+        self.assertEqual(
+            new_nodes, expected, f"Expected: {expected} to be actual: {new_nodes}"
+        )
+
+        # Test with italic text
+        node2 = TextNode(
+            "This is a text with an *italic phrase* in the middle", TextType.TEXT
+        )
+        new_nodes = split_nodes_delimiter([node2], "*", TextType.ITALIC)
+        expected = [
+            TextNode("This is a text with an ", TextType.TEXT),
+            TextNode("italic phrase", TextType.ITALIC),
+            TextNode(" in the middle", TextType.TEXT),
+        ]
+        self.assertEqual(
+            new_nodes, expected, f"Expected: {expected} to be actual: {new_nodes}"
+        )
+
+        # Test with code text
+        node3 = TextNode("This is a text with a `code block` in the middle", TextType.TEXT)
+        new_nodes = split_nodes_delimiter([node3], "`", TextType.CODE)
+        expected = [
+            TextNode("This is a text with a ", TextType.TEXT),
+            TextNode("code block", TextType.CODE),
+            TextNode(" in the middle", TextType.TEXT),
+        ]
+        self.assertEqual(
+            new_nodes, expected, f"Expected: {expected} to be actual: {new_nodes}"
         )
 
 
