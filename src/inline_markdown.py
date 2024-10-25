@@ -54,20 +54,20 @@ def split_nodes_image(old_nodes: list[TextNode]) -> list[TextNode]:
         image_tuples = extract_markdown_images(text)
         if len(image_tuples) == 0:
             result.append(node)
+        else:
+            for image in image_tuples:
+                image_alt, image_link = image
+                sections = text.split(f"![{image_alt}]({image_link})", 1)
 
-        for image in image_tuples:
-            image_alt, image_link = image
-            sections = text.split(f"![{image_alt}]({image_link})", 1)
+                if len(sections) != 2:
+                    raise Exception("Invalid Markdown: image section not closed")
+                if sections[0] != "":
+                    result.append(TextNode(sections[0], TextType.TEXT))
+                result.append(TextNode(image_alt, TextType.IMAGE, image_link))
+                text = sections[1]
 
-            if len(sections) != 2:
-                raise Exception("Invalid Markdown: image section not closed")
-            if sections[0] != "":
-                result.append(TextNode(sections[0], TextType.TEXT))
-            result.append(TextNode(image_alt, TextType.IMAGE, image_link))
-            text = sections[1]
-
-        if text != "":
-            result.append(TextNode(text, TextType.TEXT))
+            if text != "":
+                result.append(TextNode(text, TextType.TEXT))
 
     return result
 
@@ -83,19 +83,31 @@ def split_nodes_link(old_nodes: list[TextNode]) -> list[TextNode]:
         link_tuples = extract_markdown_links(text)
         if len(link_tuples) == 0:
             result.append(node)
+        else:
+            for link in link_tuples:
+                anchor_text, url = link
+                sections = text.split(f"[{anchor_text}]({url})")
 
-        for link in link_tuples:
-            anchor_text, url = link
-            sections = text.split(f"[{anchor_text}]({url})")
+                if len(sections) != 2:
+                    raise ValueError("Invalid Markdown: link section not closed")
+                if sections[0] != "":
+                    result.append(TextNode(sections[0], TextType.TEXT))
+                result.append(TextNode(anchor_text, TextType.LINK, url))
+                text = sections[1]
 
-            if len(sections) != 2:
-                raise ValueError("Invalid Markdown: link section not closed")
-            if sections[0] != "":
-                result.append(TextNode(sections[0], TextType.TEXT))
-            result.append(TextNode(anchor_text, TextType.LINK, url))
-            text = sections[1]
-
-        if text != "":
-            result.append(TextNode(text, TextType.TEXT))
+            if text != "":
+                result.append(TextNode(text, TextType.TEXT))
 
     return result
+
+
+def text_to_textnodes(text: str) -> list[TextNode]:
+    nodes = [TextNode(text, TextType.TEXT)]
+    nodes = split_nodes_image(nodes)
+    nodes = split_nodes_link(nodes)
+
+    nodes = split_nodes_delimiter(nodes, "**", TextType.BOLD)
+    nodes = split_nodes_delimiter(nodes, "*", TextType.ITALIC)
+    nodes = split_nodes_delimiter(nodes, "`", TextType.CODE)
+
+    return nodes

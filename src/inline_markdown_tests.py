@@ -7,6 +7,7 @@ from inline_markdown import (
     split_nodes_delimiter,
     split_nodes_image,
     split_nodes_link,
+    text_to_textnodes,
 )
 from textnode import TextNode, TextType, text_node_to_html_node
 
@@ -196,6 +197,29 @@ class TestSplitNodes(unittest.TestCase):
             TextNode(
                 "benji bark", TextType.IMAGE, "https://www.instagram.com/@benjitheroman"
             ),
+        ]
+        self.assertListEqual(
+            actual, expected, f"Expected: {expected}, to equal actual: {actual}"
+        )
+
+
+class TestTextToTextNodes(unittest.TestCase):
+    def test_basic_init(self):
+        text = "This is **text** with an *italic* word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
+        actual = text_to_textnodes(text)
+        expected = [
+            TextNode("This is ", TextType.TEXT),
+            TextNode("text", TextType.BOLD),
+            TextNode(" with an ", TextType.TEXT),
+            TextNode("italic", TextType.ITALIC),
+            TextNode(" word and a ", TextType.TEXT),
+            TextNode("code block", TextType.CODE),
+            TextNode(" and an ", TextType.TEXT),
+            TextNode(
+                "obi wan image", TextType.IMAGE, "https://i.imgur.com/fJRm4Vk.jpeg"
+            ),
+            TextNode(" and a ", TextType.TEXT),
+            TextNode("link", TextType.LINK, "https://boot.dev"),
         ]
         self.assertListEqual(
             actual, expected, f"Expected: {expected}, to equal actual: {actual}"
