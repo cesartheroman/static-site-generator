@@ -168,7 +168,7 @@ class TestExtractMarkdownFromText(unittest.TestCase):
 class TestSplitNodes(unittest.TestCase):
     def test_split_nodes_link(self):
         node = TextNode(
-            "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)",
+            "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev) with some extra text",
             TextType.TEXT,
         )
         actual = split_nodes_link([node])
@@ -179,6 +179,7 @@ class TestSplitNodes(unittest.TestCase):
             TextNode(
                 "to youtube", TextType.LINK, "https://www.youtube.com/@bootdotdev"
             ),
+            TextNode(" with some extra text", TextType.TEXT),
         ]
         self.assertListEqual(
             actual, expected, f"Expected: {expected}, to equal actual: {actual}"
@@ -186,17 +187,18 @@ class TestSplitNodes(unittest.TestCase):
 
     def test_split_nodes_image(self):
         node = TextNode(
-            "This is an image with a link ![benji smile](https://www.benjitheroman.dev) and ![benji bark](https://www.instagram.com/@benjitheroman)",
+            "This is an image with benji smiling ![benji smile](https://www.benjitheroman.dev) and an image with benji barking ![benji bark](https://www.instagram.com/@benjitheroman) in the park",
             TextType.TEXT,
         )
         actual = split_nodes_image([node])
         expected = [
-            TextNode("This is an image with a link ", TextType.TEXT),
+            TextNode("This is an image with benji smiling ", TextType.TEXT),
             TextNode("benji smile", TextType.IMAGE, "https://www.benjitheroman.dev"),
-            TextNode(" and ", TextType.TEXT),
+            TextNode(" and an image with benji barking ", TextType.TEXT),
             TextNode(
                 "benji bark", TextType.IMAGE, "https://www.instagram.com/@benjitheroman"
             ),
+            TextNode(" in the park", TextType.TEXT),
         ]
         self.assertListEqual(
             actual, expected, f"Expected: {expected}, to equal actual: {actual}"

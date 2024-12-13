@@ -8,13 +8,13 @@ class TestTextNode(unittest.TestCase):
         # Test basic initialization
         node = TextNode("Hello", TextType.TEXT)
         self.assertEqual(node.text, "Hello")
-        self.assertEqual(node.text_type, "text")
+        self.assertEqual(node.text_type, TextType.TEXT)
         self.assertIsNone(node.url)
 
         # Test initialization w/URL
         node_with_url = TextNode("Click here", TextType.LINK, "https://example.com")
         self.assertEqual(node_with_url.text, "Click here")
-        self.assertEqual(node_with_url.text_type, "link")
+        self.assertEqual(node_with_url.text_type, TextType.LINK)
         self.assertEqual(node_with_url.url, "https://example.com")
 
     def test_TextNode_equality(self):
@@ -39,11 +39,11 @@ class TestTextNode(unittest.TestCase):
     def test_TextNode_str_representation(self):
         # Test __repr__ method
         node = TextNode("Testing repr", TextType.ITALIC)
-        expected = "TextNode(Testing repr, italic, None)"
+        expected = f"TextNode(Testing repr, {TextType.ITALIC}, None)"
         self.assertEqual(repr(node), expected)
 
         node_with_url = TextNode("Link", TextType.LINK, "https://example.com")
-        expected_with_url = "TextNode(Link, link, https://example.com)"
+        expected_with_url = f"TextNode(Link, {TextType.LINK}, https://example.com)"
         self.assertEqual(repr(node_with_url), expected_with_url)
 
 
