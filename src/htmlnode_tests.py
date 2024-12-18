@@ -3,7 +3,7 @@ import unittest
 from htmlnode import HTMLNode, LeafNode, ParentNode
 
 
-class TextHTMLNode(unittest.TestCase):
+class TestHTMLNode(unittest.TestCase):
     def test_HTMLNode_initialization(self):
         # Test empty init
         node = HTMLNode()
