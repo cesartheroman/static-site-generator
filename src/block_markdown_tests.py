@@ -1,6 +1,6 @@
 import unittest
 
-from block_markdown import markdown_to_blocks
+from block_markdown import block_to_block_type, markdown_to_blocks
 
 
 class TestBlockMarkdown(unittest.TestCase):
@@ -43,7 +43,146 @@ This is the same paragraph on a new line
             "This is another paragraph with *italic* text and `code` here\nThis is the same paragraph on a new line",
             "* This is a list\n* with items",
         ]
-        self.assertListEqual(actual, expected, f"Expected: {expected} to be equal to actual: {actual}")
+        self.assertListEqual(
+            actual, expected, f"Expected: {expected} to be equal to actual: {actual}"
+        )
+
+
+class TestBlockToBlockType(unittest.TestCase):
+    def test_basic_heading(self):
+        raw_markdown = "# A basic heading"
+        actual = block_to_block_type(raw_markdown)
+        expected = "heading"
+        self.assertEqual(
+            actual, expected, f"Expected: {expected} to be equal to actual: {actual}"
+        )
+
+    def test_multilevel_heading(self):
+        headings = [
+            ("## Level Two Heading", "heading"),
+            ("### Level Three Heading", "heading"),
+        ]
+        for raw_markdown, expected in headings:
+            with self.subTest(raw_markdown=raw_markdown):
+                actual = block_to_block_type(raw_markdown)
+                self.assertEqual(
+                    actual,
+                    expected,
+                    f"Expected: {expected} to be equal to actual: {actual}",
+                )
+
+    def test_heading_no_space(self):
+        md = "##Heading without space"
+        actual = block_to_block_type(md)
+        expected = "paragraph"
+        self.assertEqual(
+            actual,
+            expected,
+            f"Expected: {expected} to be equal to actual: {actual}",
+        )
+
+    def test_non_heading_block(self):
+        md = "This is a regular paragraph"
+        actual = block_to_block_type(md)
+        expected = "paragraph"
+        self.assertEqual(
+            actual,
+            expected,
+            f"Expected: {expected} to be equal to actual: {actual}",
+        )
+
+    def test_excessive_hashes(self):
+        md = "####### Too many hashes"
+        actual = block_to_block_type(md)
+        expected = "paragraph"
+        self.assertEqual(
+            actual,
+            expected,
+            f"Expected: {expected} to be equal to actual: {actual}",
+        )
+
+    def test_code_block(self):
+        md = "```let test = 10```"
+        actual = block_to_block_type(md)
+        expected = "code"
+        self.assertEqual(
+            actual, expected, f"Expected: {expected} to be equal to actual: {actual}"
+        )
+
+    def test_code_missing_backticks(self):
+        headings = [
+            ("``` let test = 10", "paragraph"),
+            ("``` code block with one missing backtick``", "paragraph"),
+        ]
+        for raw_markdown, expected in headings:
+            with self.subTest(raw_markdown=raw_markdown):
+                actual = block_to_block_type(raw_markdown)
+                self.assertEqual(
+                    actual,
+                    expected,
+                    f"Expected: {expected} to be equal to actual: {actual}",
+                )
+
+    def test_quote_block(self):
+        headings = [
+            (">This is a quote\n>Second line of it\n>Last line of quote", "quote"),
+            (">This is almost a quote\n Second line", "paragraph"),
+        ]
+        for raw_markdown, expected in headings:
+            with self.subTest(raw_markdown=raw_markdown):
+                actual = block_to_block_type(raw_markdown)
+                self.assertEqual(
+                    actual,
+                    expected,
+                    f"Expected: {expected} to be equal to actual: {actual}",
+                )
+
+    def test_unordered_list_block(self):
+        headings = [
+            ("* This is the first item\n* Second item\n* and third", "unordered_list"),
+            (
+                "- This is the first item\n- Second item\n- and third just with dashes",
+                "unordered_list",
+            ),
+            (
+                "* How about a list\n- that has a mix of asterisk\n- and dashes",
+                "unordered_list",
+            ),
+            (
+                "*This is the first item\n*But this won't work because no space after *",
+                "paragraph",
+            ),
+            (
+                "-This is the first item\n-But this won't work because no space after -",
+                "paragraph",
+            ),
+        ]
+        for raw_markdown, expected in headings:
+            with self.subTest(raw_markdown=raw_markdown):
+                actual = block_to_block_type(raw_markdown)
+                self.assertEqual(
+                    actual,
+                    expected,
+                    f"Expected: {expected} to be equal to actual: {actual}",
+                )
+
+    def test_ordered_list_block(self):
+        headings = [
+            ("1. This is first item\n2. This is second\n3. and third", "ordered_list"),
+            ("1. This is first item\n1. This is first\n1. and first", "paragraph"),
+            (
+                "1. This is first item\n2.This is second with no space after .\n3. and third",
+                "paragraph",
+            ),
+        ]
+        for raw_markdown, expected in headings:
+            with self.subTest(raw_markdown=raw_markdown):
+                actual = block_to_block_type(raw_markdown)
+                self.assertEqual(
+                    actual,
+                    expected,
+                    f"Expected: {expected} to be equal to actual: {actual}",
+                )
 
 
 if __name__ == "__main__":
