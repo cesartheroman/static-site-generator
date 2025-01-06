@@ -1,7 +1,7 @@
 import unittest
 
-from htmlnode import LeafNode
-from inline_markdown import (
+from src.htmlnode import LeafNode
+from src.inline_markdown import (
     extract_markdown_images,
     extract_markdown_links,
     split_nodes_delimiter,
@@ -9,7 +9,7 @@ from inline_markdown import (
     split_nodes_link,
     text_to_textnodes,
 )
-from textnode import TextNode, TextType, text_node_to_html_node
+from src.textnode import TextNode, TextType, text_node_to_html_node
 
 
 class TestTextNodeConversion(unittest.TestCase):

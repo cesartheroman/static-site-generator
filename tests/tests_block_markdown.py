@@ -1,6 +1,11 @@
 import unittest
 
-from block_markdown import block_to_block_type, markdown_to_blocks
+from src.block_markdown import (
+    block_to_block_type,
+    markdown_to_blocks,
+    markdown_to_html_nodes,
+)
+from src.htmlnode import HTMLNode, ParentNode
 
 
 class TestBlockMarkdown(unittest.TestCase):
@@ -183,6 +188,32 @@ class TestBlockToBlockType(unittest.TestCase):
                     expected,
                     f"Expected: {expected} to be equal to actual: {actual}",
                 )
+
+
+class TestMarkdownToHtmlNodes(unittest.TestCase):
+    def test_basic_conversion(self):
+        md = "This is a paragraph"
+        actual = markdown_to_html_nodes(md)
+        expected = ParentNode("div", [HTMLNode("p", md)])
+        self.assertIsInstance(actual, HTMLNode)
+
+    def test_in_progress(self):
+        pass
+        md = """
+# Header
+
+Paragraph
+
+- List item 1
+- List item 2
+
+[link](somewhere)
+
+![image](somewhere)
+
+*italics*
+**bold**
+        """
 
 
 if __name__ == "__main__":

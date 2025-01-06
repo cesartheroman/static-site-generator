@@ -1,4 +1,4 @@
-from htmlnode import HTMLNode
+from src.htmlnode import HTMLNode
 
 
 def markdown_to_blocks(markdown: str) -> list[str]:
@@ -46,7 +46,22 @@ def block_to_block_type(markdown_block: str) -> str:
     return "paragraph"
 
 
-def markdown_to_html_nodes(markdown: str) -> HTMLNode:
-    "converts full md doc to a single parent HTMLNode with many child objects repping nested elements"
-    print(markdown)
-    return HTMLNode()
+def markdown_to_html_nodes(markdown: str):
+    """
+    converts full md doc to a single parent HTMLNode with many child objects representing nested elements
+    - Split markdown into blocks (leverage previous function)
+    - Loop over each block
+        - Determine type of block (leverage prev function)
+        - Based on type of block, create new HTMLNode with proper data
+        - Assign proper child HTMLNode objects to the block node. Created a shared text_to_children(text) function that
+        works for all block types. Takes string of text and returns list of HTMLNodes that represent inline markdown using previously created functions (think TextNode -> HTMLNode)
+    - Make all block nodes children under a single parent HTML node (should just be a div) and return
+    """
+    children = []
+    blocks = markdown_to_blocks(markdown)
+    for block in blocks:
+        block_type = block_to_block_type(block)
+        if block_type == "paragraphs":
+            children.append(HTMLNode("p", block))
+
+    return HTMLNode("div", None, children=children)
