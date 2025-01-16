@@ -5,7 +5,6 @@ from src.block_markdown import (
     markdown_to_blocks,
     markdown_to_html_node,
 )
-from src.htmlnode import HTMLNode, LeafNode, ParentNode
 
 
 class TestBlockMarkdown(unittest.TestCase):
@@ -205,7 +204,7 @@ tag here
         self.assertEqual(
             actual.to_html(),
             expected,
-            f"Expected: {expected} to equal to actual: {actual}",
+            f"Expected: {expected} to equal to actual: {actual.to_html()}",
         )
 
     def test_paragraphs(self):
@@ -223,10 +222,9 @@ This is another paragraph with *italic* text and `code` here
         self.assertEqual(
             actual.to_html(),
             expected,
-            f"Expected: {expected} to equal to actual: {actual}",
+            f"Expected: {expected} to equal to actual: {actual.to_html()}",
         )
 
-    # test lists(ordered and unordered), headings, blocquotes
     def test_lists(self):
         md = """
 - This is a list
@@ -244,7 +242,25 @@ This is another paragraph with *italic* text and `code` here
         self.assertEqual(
             actual.to_html(),
             expected,
-            f"Expected: {expected} to be equal to actual: {actual}",
+            f"Expected: {expected} to be equal to actual: {actual.to_html()}",
+        )
+
+    # test headings, blockquotes
+    def test_headings(self):
+        md = """
+# This is an h1 header
+## This is an h2
+
+##### This is an h5
+###### And this is an h6!
+
+"""
+        actual = markdown_to_html_node(md)
+        expected = "<div><h1>This is an h1 header</h1><h2>This is an h2</h2><h5>This is an h5</h5><h6>And this is an h6!</h6></div>"
+        self.assertEqual(
+            actual.to_html(),
+            expected,
+            f"Expected: {expected} to be equal to actual: {actual.to_html()}",
         )
 
 
