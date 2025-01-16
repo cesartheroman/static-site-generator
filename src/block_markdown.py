@@ -1,4 +1,6 @@
-from src.htmlnode import HTMLNode
+from src.htmlnode import LeafNode, ParentNode
+from src.inline_markdown import text_to_textnodes
+from src.textnode import text_node_to_html_node
 
 
 def markdown_to_blocks(markdown: str) -> list[str]:
@@ -6,7 +8,7 @@ def markdown_to_blocks(markdown: str) -> list[str]:
     Should take raw markdown string (repping full doc) return list of block strings
     """
     split_md = markdown.split("\n\n")
-    blocks = [block.strip() for block in split_md if block.strip()]
+    blocks = [stripped_block for block in split_md if (stripped_block := block.strip())]
 
     return blocks
 
@@ -46,22 +48,61 @@ def block_to_block_type(markdown_block: str) -> str:
     return "paragraph"
 
 
-def markdown_to_html_nodes(markdown: str):
+def markdown_to_html_node(markdown: str) -> ParentNode:
     """
     converts full md doc to a single parent HTMLNode with many child objects representing nested elements
-    - Split markdown into blocks (leverage previous function)
-    - Loop over each block
-        - Determine type of block (leverage prev function)
-        - Based on type of block, create new HTMLNode with proper data
-        - Assign proper child HTMLNode objects to the block node. Created a shared text_to_children(text) function that
-        works for all block types. Takes string of text and returns list of HTMLNodes that represent inline markdown using previously created functions (think TextNode -> HTMLNode)
-    - Make all block nodes children under a single parent HTML node (should just be a div) and return
     """
-    children = []
     blocks = markdown_to_blocks(markdown)
+    children = []
+
     for block in blocks:
         block_type = block_to_block_type(block)
-        if block_type == "paragraphs":
-            children.append(HTMLNode("p", block))
 
-    return HTMLNode("div", None, children=children)
+        if block_type == "paragraph":
+            p_items = []
+            lines = block.split("\n")
+            paragraph = " ".join(lines)
+            text_nodes = text_to_textnodes(paragraph)
+
+            for text_node in text_nodes:
+                html_node = text_node_to_html_node(text_node)
+                p_items.append(html_node)
+
+            children.append(ParentNode("p", p_items))
+
+        if block_type == "unordered_list":
+            li_items = []
+            lines = block.split("\n")
+
+            for line in lines:
+                li_children = []
+                text = line[2:]
+                text_nodes = text_to_textnodes(text)
+
+                for text_node in text_nodes:
+                    html_node = text_node_to_html_node(text_node)
+                    li_children.append(html_node)
+
+                li_items.append(ParentNode("li", li_children))
+
+            children.append(ParentNode("ul", li_items))
+
+        if block_type == "ordered_list":
+            li_items = []
+            lines = block.split("\n")
+
+            for line in lines:
+                text = line[3:]
+                text_nodes = text_to_textnodes(text)
+                li_children = []
+
+                for text_node in text_nodes:
+                    html_node = text_node_to_html_node(text_node)
+                    li_children.append(html_node)
+
+                li_items.append(ParentNode("li", li_children))
+
+            children.append(ParentNode("ol", li_items))
+
+    # print("children:", children)
+    return ParentNode("div", children)

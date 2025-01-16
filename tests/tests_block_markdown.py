@@ -3,9 +3,9 @@ import unittest
 from src.block_markdown import (
     block_to_block_type,
     markdown_to_blocks,
-    markdown_to_html_nodes,
+    markdown_to_html_node,
 )
-from src.htmlnode import HTMLNode, ParentNode
+from src.htmlnode import HTMLNode, LeafNode, ParentNode
 
 
 class TestBlockMarkdown(unittest.TestCase):
@@ -191,29 +191,93 @@ class TestBlockToBlockType(unittest.TestCase):
 
 
 class TestMarkdownToHtmlNodes(unittest.TestCase):
-    def test_basic_conversion(self):
-        md = "This is a paragraph"
-        actual = markdown_to_html_nodes(md)
-        expected = ParentNode("div", [HTMLNode("p", md)])
-        self.assertIsInstance(actual, HTMLNode)
-
-    def test_in_progress(self):
-        pass
+    def test_paragraph(self):
         md = """
-# Header
+This is **bolded** paragraph
+text in a p
+tag here
 
-Paragraph
+"""
+        actual = markdown_to_html_node(md)
+        expected = (
+            "<div><p>This is <b>bolded</b> paragraph text in a p tag here</p></div>"
+        )
+        self.assertEqual(
+            actual.to_html(),
+            expected,
+            f"Expected: {expected} to equal to actual: {actual}",
+        )
 
-- List item 1
-- List item 2
+    def test_paragraphs(self):
+        md = """
+This is **bolded** paragraph
+text in a p
+tag here
 
-[link](somewhere)
 
-![image](somewhere)
+This is another paragraph with *italic* text and `code` here
 
-*italics*
-**bold**
-        """
+"""
+        actual = markdown_to_html_node(md)
+        expected = "<div><p>This is <b>bolded</b> paragraph text in a p tag here</p><p>This is another paragraph with <i>italic</i> text and <code>code</code> here</p></div>"
+        self.assertEqual(
+            actual.to_html(),
+            expected,
+            f"Expected: {expected} to equal to actual: {actual}",
+        )
+
+    # test lists(ordered and unordered), headings, blocquotes
+    def test_lists(self):
+        md = """
+- This is a list
+- with a couple of
+- *different* items that might have inline styles
+
+1. This is an `ordered` list
+2. With a couple of items
+3. and some other items
+
+"""
+        actual = markdown_to_html_node(md)
+        expected = "<div><ul><li>This is a list</li><li>with a couple of</li><li><i>different</i> items that might have inline styles</li></ul><ol><li>This is an <code>ordered</code> list</li><li>With a couple of items</li><li>and some other items</li></ol></div>"
+
+        self.assertEqual(
+            actual.to_html(),
+            expected,
+            f"Expected: {expected} to be equal to actual: {actual}",
+        )
+
+
+#     def test_multi_block_type(self):
+#         md = """
+# # This is a header
+#
+# This is a regular paragraph
+#
+# - List item 1
+# - List item 2
+#
+# *this is in italics*
+# **this is in bold**
+#         """
+#         actual = markdown_to_html_node(md)
+#         expected = ParentNode(
+#             "div",
+#             [
+#                 LeafNode("h1", "This is a header"),
+#                 LeafNode("p", "This is a regular paragraph"),
+#                 ParentNode(
+#                     "ul", [LeafNode("li", "List item 1"), LeafNode("li", "List item 2")]
+#                 ),
+#                 LeafNode("i", "this is in italics"),
+#                 LeafNode("b", "this is in bold"),
+#             ],
+#         )
+#         self.assertEqual(
+#             actual,
+#             expected.to_html(),
+#             f"Expected: {expected.to_html()} to be equal to actual: {actual.to_html}",
+#         )
 
 
 if __name__ == "__main__":
