@@ -111,8 +111,42 @@ def markdown_to_html_node(markdown: str) -> ParentNode:
                 i = 0
                 while line[i] == "#":
                     i += 1
-                text = line[i + 1:]
+                text = line[i + 1 :]
                 children.append(LeafNode(f"h{i}", text))
 
-    # print("children:", children)
+        if block_type == "quote":
+            lines = block.split("\n")
+            new_lines = []
+
+            for line in lines:
+                new_lines.append(line[1:].strip())
+
+            text = " ".join(new_lines)
+            text_nodes = text_to_textnodes(text)
+            q_children = []
+
+            for text_node in text_nodes:
+                html_node = text_node_to_html_node(text_node)
+                q_children.append(html_node)
+
+            children.append(ParentNode("blockquote", q_children))
+
+        if block_type == "code":
+            if not block.startswith("```") or not block.endswith("```"):
+                raise ValueError("Missing starting or closing delimiters")
+
+            code_items = []
+            html_nodes = []
+
+            text = block[4:-3]
+            text_nodes = text_to_textnodes(text)
+
+            for text_node in text_nodes:
+                html_node = text_node_to_html_node(text_node)
+                html_nodes.append(html_node)
+
+            code_items.append(ParentNode("code", html_nodes))
+
+            children.append(ParentNode("pre", code_items))
+
     return ParentNode("div", children)
