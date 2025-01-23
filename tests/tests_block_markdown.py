@@ -345,7 +345,7 @@ return a + b
 
 """
         actual = markdown_to_html_node(md)
-        expected = '<div><h2>Header 2</h2><p>This is a standalone paragraph</p><ul><li>List item 1</li><li>List item 2</li></ul><p><a href="to_somewhere">link</a></p><p><img src="of_something" alt="image"></img></p><p>another paragraphs with <i>italic words</i> inside of it <b> a wild bold sentence</b></p><blockquote>A blockquote about something</blockquote><pre><code>let a = 12\nlet b = 20\nreturn a + b\n</code></pre><ol><li>Second to last item</li><li>Last item</li></ol></div>'
+        expected = '<div><h2>Header 2</h2><p>This is a standalone paragraph</p><ul><li>List item 1</li><li>List item 2</li></ul><p><a href="to_somewhere">link</a></p><p><img src="of_something" alt="image">/></p><p>another paragraphs with <i>italic words</i> inside of it <b> a wild bold sentence</b></p><blockquote>A blockquote about something</blockquote><pre><code>let a = 12\nlet b = 20\nreturn a + b\n</code></pre><ol><li>Second to last item</li><li>Last item</li></ol></div>'
         self.assertEqual(
             actual.to_html(),
             expected,
