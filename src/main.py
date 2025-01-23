@@ -1,6 +1,6 @@
 import os
 
-from copy_static_files import copy_static_files
+from copy_static import copy_static_files
 
 
 def main():

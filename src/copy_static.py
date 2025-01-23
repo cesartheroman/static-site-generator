@@ -32,10 +32,3 @@ def copy_static_files(src_path: str, dst_path: str):
             copy_static_files(src_item, dst_item)
         else:
             shutil.copy(src_item, dst_item)
-
-
-if __name__ == "__main__":
-    src_path = os.path.join(os.getcwd(), "static")
-    dst_path = os.path.join(os.getcwd(), "public")
-
-    copy_static_files(src_path, dst_path)
