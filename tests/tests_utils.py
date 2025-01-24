@@ -34,6 +34,7 @@ this is a regular paragraph
 ## This is a second header
 
 # Tricky # Tricky
+
 this is a regular paragraph
 """
         actual = extract_title(md)
