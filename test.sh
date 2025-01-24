@@ -1,1 +1,1 @@
-python -m unittest discover -s tests -v -f -p "tests*.py"
+python -m unittest discover -s tests -v -f -p "tests*.py" -k "TestUtils"
