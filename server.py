@@ -26,5 +26,5 @@ with HTTPServer(ServerAddress, CORSHTTPRequestHandler) as httpd:
     except KeyboardInterrupt:
         pass
 
-    httpd.server_close()
     print("\nserver stopped")
+    httpd.server_close()
