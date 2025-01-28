@@ -1,6 +1,6 @@
 import unittest
 
-from src.utils import extract_title
+from src.generate_html import extract_title
 
 
 class TestUtils(unittest.TestCase):
