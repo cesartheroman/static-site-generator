@@ -111,8 +111,16 @@ def markdown_to_html_node(markdown: str) -> ParentNode:
                 i = 0
                 while line[i] == "#":
                     i += 1
-                text = line[i + 1 :]
-                children.append(LeafNode(f"h{i}", text))
+                text = line[i + 1 :].strip()
+                text_nodes = text_to_textnodes(text)
+                heading_children = []
+
+                for text_node in text_nodes:
+                    html_node = text_node_to_html_node(text_node)
+                    heading_children.append(html_node)
+
+                children.append(ParentNode(f"h{i}", heading_children))
+
 
         if block_type == "quote":
             lines = block.split("\n")
