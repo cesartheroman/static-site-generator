@@ -1,7 +1,7 @@
 import os
 
 from .copy_static import copy_static_files
-from .utils import generate_page
+from .generate_html import generate_pages_recursive
 
 
 def main():
@@ -10,11 +10,11 @@ def main():
     static_dir = os.path.join(project_root, "static")
     public_dir = os.path.join(project_root, "public")
     template_path = os.path.join(project_root, "template.html")
-    content_path = os.path.join(project_root, "content", "index.md")
-    output_path = os.path.join(public_dir, "index.html")
+    content_path = os.path.join(project_root, "content")
+    output_path = os.path.join(public_dir)
 
     copy_static_files(static_dir, public_dir)
-    generate_page(content_path, template_path, output_path)
+    generate_pages_recursive(content_path, template_path, output_path)
 
 
 if __name__ == "__main__":
