@@ -121,7 +121,6 @@ def markdown_to_html_node(markdown: str) -> ParentNode:
 
                 children.append(ParentNode(f"h{i}", heading_children))
 
-
         if block_type == "quote":
             lines = block.split("\n")
             new_lines = []
