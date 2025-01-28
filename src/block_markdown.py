@@ -1,6 +1,6 @@
-from src.htmlnode import LeafNode, ParentNode
-from src.inline_markdown import text_to_textnodes
-from src.textnode import text_node_to_html_node
+from .htmlnode import LeafNode, ParentNode
+from .inline_markdown import text_to_textnodes
+from .textnode import text_node_to_html_node
 
 
 def markdown_to_blocks(markdown: str) -> list[str]:
